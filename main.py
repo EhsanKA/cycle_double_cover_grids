@@ -39,6 +39,7 @@ class grid:
         self.e41 = edge(self.p4, self.p1)
 
         self.base_color = 0            ######## 0 is white  ####### 1 is gray  ######## 2 is black
+        self.visited = False            ####### this is for finding inner cells based on using             """"BFS""""
         self.is_in_cycle = False
         self.is_in_cycle_border = False
         self.cycle_connectivity_num = 0
@@ -132,7 +133,7 @@ def find_cycle_borders(all_grids, border_edges_list , m, n):
     print(border_grids_list[0].x, border_grids_list[0].y)
     edg0 = border_grids_list[0].e12
     border_edges_list = edge_ordering(edg0, border_edges_list)
-    border_grids = inner_cells(border_edges_list, all_grids)
+    border_grids = border_cells(border_edges_list, all_grids)
 
 
 #     edg = edg0
@@ -171,7 +172,7 @@ def edge_ordering(edge0, border):    #assomption is edge up left 3 type of direc
     return correct_border
 
 ############ farz mikonim ke fasele ha ra'ayat shode!!
-def inner_cells(border, all_grids):
+def border_cells(border, all_grids):
     border_grids = []
     for i in range(len(border)):
 
