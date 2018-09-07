@@ -209,6 +209,12 @@ def border_cells(border, all_grids):
                 border_grids.append(all_grids[t][u])
     return  border_grids
 
+    #todo first find one of inner cells , for example downer cell of up left cell! after that we use bfs and implement it in this method using this link "https://www.geeksforgeeks.org/breadth-first-search-or-bfs-for-a-graph/"
+    #todo  and adding 4 neighbours (up, down, left, right)   is_visited !! and checking none of them is .is_in_border== true! :)
+
+def inner_cells(border_cells, cell, all_grids):
+
+
 
 # def find_next_grid(border_edges_list, edg):             #### edg.p1 -> edg.p2 show the direction of movement
 #     handy_border_edges_list = border_edges_list
