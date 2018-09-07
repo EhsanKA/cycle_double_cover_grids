@@ -131,19 +131,45 @@ def find_cycle_borders(border_edges_list , m, n):
 
     print(border_grids_list[0].x, border_grids_list[0].y)
     edg0 = border_grids_list[0].e12
-    edg = edg0
-    d = 0
-    i, j = 0, 0
-    while len(border_edges_list) > d:
-        i, j, next_edge = find_next_grid(border_edges_list, edg)
-        print("i", i, "j", j)
-        if border_grids_list.count(all_grids[i][j]) == 0:
-            border_grids_list.append(all_grids[int(i)][int(j)])
-#        print(border_grids_list[-1].x, border_grids_list[-1].y)
-#        border_edges_list.remove(edg)
-        edg = next_edge
-        print(len(border_grids_list))
-        d +=1
+    border_edges_list = edge_ordering(edg0, border_edges_list)
+
+#     edg = edg0
+#     d = 0
+#     i, j = 0, 0
+#     while len(border_edges_list) > d:
+#         i, j, next_edge = find_next_grid(border_edges_list, edg)
+#         print("i", i, "j", j)
+#         if border_grids_list.count(all_grids[i][j]) == 0:
+#             border_grids_list.append(all_grids[int(i)][int(j)])
+# #        print(border_grids_list[-1].x, border_grids_list[-1].y)
+# #        border_edges_list.remove(edg)
+#         edg = next_edge
+#         print(len(border_grids_list))
+#         d +=1
+
+def edge_ordering(edge0, border):    #assomption is edge up left 3 type of direction
+    correct_border = []
+    correct_border.append(edge0)
+    while 0 < len(border):
+        p2 = edge0.p2
+        for e in border:
+            if p2.is_equal(e.p1):
+                edge0 = e
+                border.remove(e)
+                correct_border.append(edge0)
+                break
+            elif p2.is_equal(e.p2):
+                p = e.p1
+                e.p1 = e.p2
+                e.p2 = p
+                edge0 = e
+                border.remove(e)
+                correct_border.append(edge0)
+                break
+    return correct_border
+
+
+
 
 def find_next_grid(border_edges_list, edg):             #### edg.p1 -> edg.p2 show the direction of movement
     handy_border_edges_list = border_edges_list
@@ -242,7 +268,6 @@ def get_grid_from_point(p):
 
 
 def get_direction(edg):
-    direction = 0
     if edg.p1.x == edg.p2.x:
         if edg.p1.y > edg.p2.y:
             direction = 2
