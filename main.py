@@ -74,16 +74,16 @@ class board:
             for j in range(m):
                 all_grids[i].append(grid(i,j))
         #####################   setting up down left right connection
-        # for i in range(m):
-        #     for j in range(n):
-        #         if i-1 >= 0:
-        #             all_grids[i][j].lefter_grid = all_grids[i-1][j]
-        #         if i+1 <= m-1:
-        #             all_grids[i][j].righter_grid = all_grids[i+1][j]
-        #         if j-1 >= 0:
-        #             all_grids[i][j].upper_grid = all_grids[i][j-1]
-        #         if j+1 <= n-1:
-        #             all_grids[i][j].downer_grid = all_grids[i][j+1]
+        for i in range(n):
+            for j in range(m):
+                if i-1 >= 0:
+                    all_grids[i][j].lefter_grid = all_grids[i-1][j]
+                if i+1 <= n-1:
+                    all_grids[i][j].righter_grid = all_grids[i+1][j]
+                if j-1 >= 0:
+                    all_grids[i][j].upper_grid = all_grids[i][j-1]
+                if j+1 <= m-1:
+                    all_grids[i][j].downer_grid = all_grids[i][j+1]
 
         ####################### coloring the base 
         for i in range(n):
@@ -100,7 +100,7 @@ class board:
                         all_grids[i][j].base_color = 0
 
 
-def find_cycle_borders(border_edges_list , m, n):
+def find_cycle_borders(all_grids, border_edges_list , m, n):
     border_grids_list = []
     miny = n
     
@@ -132,6 +132,8 @@ def find_cycle_borders(border_edges_list , m, n):
     print(border_grids_list[0].x, border_grids_list[0].y)
     edg0 = border_grids_list[0].e12
     border_edges_list = edge_ordering(edg0, border_edges_list)
+    border_grids = inner_cells(border_edges_list, all_grids)
+
 
 #     edg = edg0
 #     d = 0
@@ -168,100 +170,136 @@ def edge_ordering(edge0, border):    #assomption is edge up left 3 type of direc
                 break
     return correct_border
 
+############ farz mikonim ke fasele ha ra'ayat shode!!
+def inner_cells(border, all_grids):
+    border_grids = []
+    for i in range(len(border)):
+
+        if get_direction(border[i]) == 1:
+            t, u = border[i].p2.x, border[i].p2.y -1
+            if all_grids[t][u].is_in_cycle_border:
+                continue
+            else:
+                all_grids[t][u].is_in_cycle_border = True
+                border_grids.append(all_grids[t][u])
+
+        elif get_direction(border[i]) == 2:
+            t, u = border[i].p2.x, border[i].p2.y
+            if all_grids[t][u].is_in_cycle_border:
+                continue
+            else:
+                all_grids[t][u].is_in_cycle_border = True
+                border_grids.append(all_grids[t][u])
+
+        elif get_direction(border[i]) == 3:
+            t, u = border[i].p2.x-1, border[i].p2.y
+            if all_grids[t][u].is_in_cycle_border:
+                continue
+            else:
+                all_grids[t][u].is_in_cycle_border = True
+                border_grids.append(all_grids[t][u])
+
+        elif get_direction(border[i]) == 4:
+            t, u = border[i].p2.x-1, border[i].p2.y-1
+            if all_grids[t][u].is_in_cycle_border:
+                continue
+            else:
+                all_grids[t][u].is_in_cycle_border = True
+                border_grids.append(all_grids[t][u])
+    return  border_grids
 
 
-
-def find_next_grid(border_edges_list, edg):             #### edg.p1 -> edg.p2 show the direction of movement
-    handy_border_edges_list = border_edges_list
-    direction = get_direction(edg)
-    print(direction)
-    next_edge = edg
-    if direction == 1:
-        for e in border_edges_list:
-            if edg.p2.is_equal(e.p1):
-                next_edge = e
-                break
-            elif edg.p2.is_equal(e.p2):
-                p = e.p1
-                e.p1 = e.p2
-                e.p2 = p
-                next_edge = e
-                break
-        next_dir = get_direction(next_edge)
-        if next_dir == 1:
-            i, j = get_grid_from_point(next_edge.p2)
-            return i, j-1, next_edge
-        elif next_dir == 2:
-            i , j = get_grid_from_point(next_edge.p2)
-            return i, j, next_edge
-        elif next_dir == 4:
-            i, j = get_grid_from_point(next_edge.p2)
-            return i-1, j-1, next_edge
-    elif direction == 2:
-        for e in border_edges_list:
-            if edg.p2.is_equal(e.p1):
-                next_edge = e
-                break
-            elif edg.p2.is_equal(e.p2):
-                p = e.p1
-                e.p1 = e.p2
-                e.p2 = p
-                next_edge = e
-                break
-        next_dir = get_direction(next_edge)
-        if next_dir == 1:
-            i, j = get_grid_from_point(next_edge.p2)
-            return i, j-1, next_edge
-        elif next_dir == 2:
-            i, j = get_grid_from_point(next_edge.p2)
-            return i, j, next_edge
-        elif next_dir == 3:
-            i, j = get_grid_from_point(next_edge.p2)
-            return i-1, j, next_edge
-    elif direction == 3:
-        for e in border_edges_list:
-            if edg.p2.is_equal(e.p1):
-                next_edge = e
-                break
-            elif edg.p2.is_equal(e.p2):
-                p = e.p1
-                e.p1 = e.p2
-                e.p2 = p
-                next_edge = e
-                break
-        next_dir = get_direction(next_edge)
-
-        print(next_dir, "nextdir")
-        if next_dir == 2:
-            i, j = get_grid_from_point(next_edge.p2)
-            return i, j, next_edge
-        elif next_dir == 3:
-            i, j = get_grid_from_point(next_edge.p2)
-            return i-1, j, next_edge
-        elif next_dir == 4:
-            i, j = get_grid_from_point(next_edge.p2)
-            return i-1, j-1, next_edge
-    elif direction == 4:
-        for e in border_edges_list:
-            if edg.p2.is_equal(e.p1):
-                next_edge = e
-                break
-            elif edg.p2.is_equal(e.p2):
-                p = e.p1
-                e.p1 = e.p2
-                e.p2 = p
-                next_edge = e
-                break
-        next_dir = get_direction(next_edge)
-        if next_dir == 1:
-            i, j = get_grid_from_point(next_edge.p2)
-            return i, j-1, next_edge
-        elif next_dir == 3:
-            i, j = get_grid_from_point(next_edge.p2)
-            return i-1, j, next_edge
-        elif next_dir == 4:
-            i, j = get_grid_from_point(next_edge.p2)
-            return i-1, j-1, next_edge
+# def find_next_grid(border_edges_list, edg):             #### edg.p1 -> edg.p2 show the direction of movement
+#     handy_border_edges_list = border_edges_list
+#     direction = get_direction(edg)
+#     print(direction)
+#     next_edge = edg
+#     if direction == 1:
+#         for e in border_edges_list:
+#             if edg.p2.is_equal(e.p1):
+#                 next_edge = e
+#                 break
+#             elif edg.p2.is_equal(e.p2):
+#                 p = e.p1
+#                 e.p1 = e.p2
+#                 e.p2 = p
+#                 next_edge = e
+#                 break
+#         next_dir = get_direction(next_edge)
+#         if next_dir == 1:
+#             i, j = get_grid_from_point(next_edge.p2)
+#             return i, j-1, next_edge
+#         elif next_dir == 2:
+#             i , j = get_grid_from_point(next_edge.p2)
+#             return i, j, next_edge
+#         elif next_dir == 4:
+#             i, j = get_grid_from_point(next_edge.p2)
+#             return i-1, j-1, next_edge
+#     elif direction == 2:
+#         for e in border_edges_list:
+#             if edg.p2.is_equal(e.p1):
+#                 next_edge = e
+#                 break
+#             elif edg.p2.is_equal(e.p2):
+#                 p = e.p1
+#                 e.p1 = e.p2
+#                 e.p2 = p
+#                 next_edge = e
+#                 break
+#         next_dir = get_direction(next_edge)
+#         if next_dir == 1:
+#             i, j = get_grid_from_point(next_edge.p2)
+#             return i, j-1, next_edge
+#         elif next_dir == 2:
+#             i, j = get_grid_from_point(next_edge.p2)
+#             return i, j, next_edge
+#         elif next_dir == 3:
+#             i, j = get_grid_from_point(next_edge.p2)
+#             return i-1, j, next_edge
+#     elif direction == 3:
+#         for e in border_edges_list:
+#             if edg.p2.is_equal(e.p1):
+#                 next_edge = e
+#                 break
+#             elif edg.p2.is_equal(e.p2):
+#                 p = e.p1
+#                 e.p1 = e.p2
+#                 e.p2 = p
+#                 next_edge = e
+#                 break
+#         next_dir = get_direction(next_edge)
+#
+#         print(next_dir, "nextdir")
+#         if next_dir == 2:
+#             i, j = get_grid_from_point(next_edge.p2)
+#             return i, j, next_edge
+#         elif next_dir == 3:
+#             i, j = get_grid_from_point(next_edge.p2)
+#             return i-1, j, next_edge
+#         elif next_dir == 4:
+#             i, j = get_grid_from_point(next_edge.p2)
+#             return i-1, j-1, next_edge
+#     elif direction == 4:
+#         for e in border_edges_list:
+#             if edg.p2.is_equal(e.p1):
+#                 next_edge = e
+#                 break
+#             elif edg.p2.is_equal(e.p2):
+#                 p = e.p1
+#                 e.p1 = e.p2
+#                 e.p2 = p
+#                 next_edge = e
+#                 break
+#         next_dir = get_direction(next_edge)
+#         if next_dir == 1:
+#             i, j = get_grid_from_point(next_edge.p2)
+#             return i, j-1, next_edge
+#         elif next_dir == 3:
+#             i, j = get_grid_from_point(next_edge.p2)
+#             return i-1, j, next_edge
+#         elif next_dir == 4:
+#             i, j = get_grid_from_point(next_edge.p2)
+#             return i-1, j-1, next_edge
             
 def get_grid_from_point(p):
     return p.x, p.y
@@ -288,24 +326,24 @@ def get_direction(edg):
 m = 3
 n = 4
     
-bord = board(4,3) 
+bord = board(6,5)
 
-p1 = point(1,0)
-p2 = point(2,0)
-p3 = point(2,1)
-p4 = point(3,1)
-p5 = point(3,2)
-p6 = point(3,3)
-p7 = point(2,3)
-p8 = point(2,2)
-p9 = point(1,2)
-p10 = point(1,3)
-p11 = point(1,4)
-p12 = point(0,4)
-p13 = point(0,3)
-p14 = point(0,2)
-p15 = point(0,1)
-p16 = point(1,1)
+p1 = point(2,1)
+p2 = point(3,1)
+p3 = point(3,2)
+p4 = point(4,2)
+p5 = point(4,3)
+p6 = point(4,4)
+p7 = point(3,4)
+p8 = point(3,3)
+p9 = point(2,3)
+p10 = point(2,4)
+p11 = point(2,5)
+p12 = point(1,5)
+p13 = point(1,4)
+p14 = point(1,3)
+p15 = point(1,2)
+p16 = point(2,2)
 
 border_edges_list = [edge(p7,p8), edge(p3,p4), edge(p1,p2), edge(p4,p5), edge(p16,p1), edge(p5,p6), edge(p3,p2), edge(p7,p6), edge(p14,p13), 
 edge(p12,p13), edge(p9,p8), edge(p14,p15),edge(p9,p10), edge(p10,p11), edge(p16,p15), edge(p11,p12)]
@@ -313,4 +351,4 @@ edge(p12,p13), edge(p9,p8), edge(p14,p15),edge(p9,p10), edge(p10,p11), edge(p16,
 # for edg in border_edges_list:
 #     print(edg.p1.x/grid_lenght, edg.p1.y/grid_lenght, edg.p2.x/grid_lenght, edg.p2.y/grid_lenght)
     
-find_cycle_borders(border_edges_list, m, n)
+find_cycle_borders(all_grids, border_edges_list, m, n)
