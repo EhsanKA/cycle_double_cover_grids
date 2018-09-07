@@ -29,10 +29,10 @@ class grid:
         self.x = x
         self.y = y
 
-        self.p1 = point( x     * grid_lenght, y     * grid_lenght)
-        self.p2 = point( (x+1) * grid_lenght, y     * grid_lenght)
-        self.p3 = point( (x+1) * grid_lenght, (y+1) * grid_lenght)
-        self.p4 = point( x     * grid_lenght, (y+1) * grid_lenght)
+        self.p1 = point( x  , y  )
+        self.p2 = point( x+1, y  )
+        self.p3 = point( x+1, y+1)
+        self.p4 = point( x  , y+1)
         self.e12 = edge(self.p1, self.p2)
         self.e23 = edge(self.p2, self.p3)
         self.e34 = edge(self.p3, self.p4)
@@ -102,10 +102,7 @@ class board:
 
 def find_cycle_borders(border_edges_list , m, n):
     border_grids_list = []
-    # candidate_border_grids_list = []
-    minx = m * grid_lenght
-    miny = n * grid_lenght
-#    index = 0
+    miny = n
     
     e = border_edges_list[0]
     minimal_list = []
@@ -126,29 +123,12 @@ def find_cycle_borders(border_edges_list , m, n):
         minimal_list.remove(del_list[k])
     e = minimal_list[0]
     for edg in minimal_list:
-        if min(e.p1.x , e.p2.x) > min(edg.p1.x , edg.p2.x):
+        if min(e.p1.x , e.p2.x) > min(edg.p1.x, edg.p2.x):
             e = edg
-    #     edg.print_edge()
-    # print minimal_list[0].p1.x
-    # print minimal_list[0].p1.y
-    # print minimal_list[0].p2.x
-    # print minimal_list[0].p2.y
-    
-    # for edg in border_edges_list:
-    #     minxe = min(edg.p1.x , edg.p2.x)
-    #     if minx > minxe:
-    #         minx = minxe
-    # for edg in border_edges_list:
-    #     if minx == min(edg.p1.x , edg.p2.x):
-    #         if edg.p1.y == edg.p2.y:
-    #             minye = min(edg.p1.y, edg.p2.y)
-    #             if miny > minye:
-    #                 miny = minye
-        
-    # print ("mins",  minx , miny)
-    # print("p1.x", e.p1.x, "p1.y", e.p1.y, "p2.x",e.p2.x,  "p2.y", e.p2.y)
+
+    border_grids_list.append(all_grids[ min(e.p1.x,e.p2.x)][min(e.p1.y, e.p2.y) ])
     border_edges_list.remove(e)
-    border_grids_list.append(all_grids[ int(minx / grid_lenght)][int(miny / grid_lenght)])
+
     print(border_grids_list[0].x, border_grids_list[0].y)
     edg0 = border_grids_list[0].e12
     edg = edg0
@@ -157,7 +137,8 @@ def find_cycle_borders(border_edges_list , m, n):
     while len(border_edges_list) > d:
         i, j, next_edge = find_next_grid(border_edges_list, edg)
         print("i", i, "j", j)
-        border_grids_list.append(all_grids[i][j])
+        if border_grids_list.count(all_grids[i][j]) == 0:
+            border_grids_list.append(all_grids[int(i)][int(j)])
 #        print(border_grids_list[-1].x, border_grids_list[-1].y)
 #        border_edges_list.remove(edg)
         edg = next_edge
@@ -165,6 +146,7 @@ def find_cycle_borders(border_edges_list , m, n):
         d +=1
 
 def find_next_grid(border_edges_list, edg):             #### edg.p1 -> edg.p2 show the direction of movement
+    handy_border_edges_list = border_edges_list
     direction = get_direction(edg)
     print(direction)
     next_edge = edg
@@ -172,11 +154,13 @@ def find_next_grid(border_edges_list, edg):             #### edg.p1 -> edg.p2 sh
         for e in border_edges_list:
             if edg.p2.is_equal(e.p1):
                 next_edge = e
+                break
             elif edg.p2.is_equal(e.p2):
                 p = e.p1
                 e.p1 = e.p2
                 e.p2 = p
                 next_edge = e
+                break
         next_dir = get_direction(next_edge)
         if next_dir == 1:
             i, j = get_grid_from_point(next_edge.p2)
@@ -191,11 +175,13 @@ def find_next_grid(border_edges_list, edg):             #### edg.p1 -> edg.p2 sh
         for e in border_edges_list:
             if edg.p2.is_equal(e.p1):
                 next_edge = e
+                break
             elif edg.p2.is_equal(e.p2):
                 p = e.p1
                 e.p1 = e.p2
                 e.p2 = p
                 next_edge = e
+                break
         next_dir = get_direction(next_edge)
         if next_dir == 1:
             i, j = get_grid_from_point(next_edge.p2)
@@ -210,14 +196,14 @@ def find_next_grid(border_edges_list, edg):             #### edg.p1 -> edg.p2 sh
         for e in border_edges_list:
             if edg.p2.is_equal(e.p1):
                 next_edge = e
+                break
             elif edg.p2.is_equal(e.p2):
                 p = e.p1
                 e.p1 = e.p2
                 e.p2 = p
                 next_edge = e
+                break
         next_dir = get_direction(next_edge)
-        # print("p1.x", next_edge.p1.x, "p1.y", next_edge.p1.y, "p2.x",next_edge.p2.x,  "p2.y", next_edge.p2.y)
-        print((next_edge.p1.x /grid_lenght , next_edge.p1.y/grid_lenght) , (next_edge.p2.x/grid_lenght , next_edge.p2.y/ grid_lenght))
 
         print(next_dir, "nextdir")
         if next_dir == 2:
@@ -233,11 +219,13 @@ def find_next_grid(border_edges_list, edg):             #### edg.p1 -> edg.p2 sh
         for e in border_edges_list:
             if edg.p2.is_equal(e.p1):
                 next_edge = e
+                break
             elif edg.p2.is_equal(e.p2):
                 p = e.p1
                 e.p1 = e.p2
                 e.p2 = p
                 next_edge = e
+                break
         next_dir = get_direction(next_edge)
         if next_dir == 1:
             i, j = get_grid_from_point(next_edge.p2)
@@ -250,7 +238,7 @@ def find_next_grid(border_edges_list, edg):             #### edg.p1 -> edg.p2 sh
             return i-1, j-1, next_edge
             
 def get_grid_from_point(p):
-    return p.x / grid_lenght , p.y / grid_lenght
+    return p.x, p.y
 
 
 def get_direction(edg):
@@ -277,22 +265,22 @@ n = 4
     
 bord = board(4,3) 
 
-p1 = point(1*grid_lenght,0*grid_lenght)
-p2 = point(2*grid_lenght,0*grid_lenght)
-p3 = point(2*grid_lenght,1*grid_lenght)
-p4 = point(3*grid_lenght,1*grid_lenght)
-p5 = point(3*grid_lenght,2*grid_lenght)
-p6 = point(3*grid_lenght,3*grid_lenght)
-p7 = point(2*grid_lenght,3*grid_lenght)
-p8 = point(2*grid_lenght,2*grid_lenght)
-p9 = point(1*grid_lenght,2*grid_lenght)
-p10 = point(1*grid_lenght,3*grid_lenght)
-p11 = point(1*grid_lenght,4*grid_lenght)
-p12 = point(0*grid_lenght,4*grid_lenght)
-p13 = point(0*grid_lenght,3*grid_lenght)
-p14 = point(0*grid_lenght,2*grid_lenght)
-p15 = point(0*grid_lenght,1*grid_lenght)
-p16 = point(1*grid_lenght,1*grid_lenght)
+p1 = point(1,0)
+p2 = point(2,0)
+p3 = point(2,1)
+p4 = point(3,1)
+p5 = point(3,2)
+p6 = point(3,3)
+p7 = point(2,3)
+p8 = point(2,2)
+p9 = point(1,2)
+p10 = point(1,3)
+p11 = point(1,4)
+p12 = point(0,4)
+p13 = point(0,3)
+p14 = point(0,2)
+p15 = point(0,1)
+p16 = point(1,1)
 
 border_edges_list = [edge(p7,p8), edge(p3,p4), edge(p1,p2), edge(p4,p5), edge(p16,p1), edge(p5,p6), edge(p3,p2), edge(p7,p6), edge(p14,p13), 
 edge(p12,p13), edge(p9,p8), edge(p14,p15),edge(p9,p10), edge(p10,p11), edge(p16,p15), edge(p11,p12)]
