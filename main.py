@@ -223,8 +223,8 @@ def border_cells(border, all_grids):
                 all_grids[t][u].is_e23_in_border = True
     return  border_grids
 
-    #todo first find one of inner cells , for example downer cell of up left cell! after that we use bfs and implement it in this method using this link "https://www.geeksforgeeks.org/breadth-first-search-or-bfs-for-a-graph/"
-    #todo  and adding 4 neighbours (up, down, left, right)   is_visited !! and checking none of them is .is_in_border== true! :)
+    # first find one of inner cells , for example downer cell of up left cell! after that we use bfs and implement it in this method using this link "https://www.geeksforgeeks.org/breadth-first-search-or-bfs-for-a-graph/"
+    #  and adding 4 neighbours (up, down, left, right)   is_visited !! and checking none of them is .is_in_border== true! :)
 
 def inner_cells(cell):
     q = []
