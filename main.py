@@ -2,6 +2,11 @@
 grid_lenght = 64
 
 all_grids = []
+cir_white = 1
+cir_black = 2
+white = 0
+black = 2
+gray = 1
 
 class point:
     def __init__ (self,x,y):
@@ -62,7 +67,7 @@ class grid:
         # self.is_in_q = False
         # self.is_in_q_border = False
         # self.is_corner = False
-        # self.has_circle = -1            ####### 0 is white  ###### 1 is black  ####### -1 is none
+        self.has_circle = 0            ####### 0 is none  ###### 1 is white  ####### 2 is black
         # self.is_red = False
 
         self.upper_grid = None
@@ -134,12 +139,13 @@ def find_cycle_borders(all_grids, border_edges_list , m, n):
     border_grids_list.append(all_grids[min(e.p1.y, e.p2.y)][min(e.p1.x,e.p2.x)])
     border_edges_list.remove(e)
 
-    print(border_grids_list[0].x, border_grids_list[0].y)
+    # print(border_grids_list[0].x, border_grids_list[0].y)
     edg0 = border_grids_list[0].e12
     tmp_border_edges_list = edge_ordering(edg0, border_edges_list)
     border_edges_list = tmp_border_edges_list
     border_grids = border_cells(border_edges_list, all_grids)
     inner_cells(border_grids_list[0])
+    find_circles(border_edges_list, all_grids)
 
 
 #     edg = edg0
@@ -256,6 +262,103 @@ def add_neighbours(cell, q):
         q.append(cell.lefter_grid)
         cell.lefter_grid.is_in_cycle = True
         cell.lefter_grid.visited = True
+
+
+def find_circles(border, all_grids):
+                                                                        #niaz nist dasti bashe range( -1, len(border)) okeye: border[n-1] -> border[0] dasti barresi shavad
+    for i in range(-1, len(border)-1):
+        fdir = get_direction(border[i])             #first
+        sdir = get_direction(border[i+1])           #second
+        x_cord = border[i].p2.x
+        y_cord = border[i].p2.y
+
+        if fdir == 1:
+            if sdir == 1:
+                continue
+            elif sdir == 2 and all_grids[y_cord - 1][x_cord].base_color == gray:
+                all_grids[y_cord-1][x_cord].has_circle = cir_white
+                if all_grids[y_cord][x_cord].base_color == white:
+                    all_grids[y_cord][x_cord].has_circle = cir_white
+                    all_grids[y_cord][x_cord + 1].has_circle = cir_white
+                else:
+                    all_grids[y_cord-1][x_cord-1].has_circle = cir_white
+                    all_grids[y_cord-2][x_cord-1].has_circle =cir_white
+
+            elif sdir == 4 and all_grids[y_cord][x_cord].base_color == gray:
+                all_grids[y_cord][x_cord].has_circle = cir_black
+                if all_grids[y_cord][x_cord - 1].base_color == black:
+                    all_grids[y_cord][x_cord - 1].has_circle = cir_black
+                    all_grids[y_cord + 1][x_cord - 1].has_circle = cir_black
+                else:
+                    all_grids[y_cord - 1][x_cord].has_circle = cir_black
+                    all_grids[y_cord - 1][x_cord + 1].has_circle = cir_black
+
+        if fdir == 2:
+            if sdir == 1 and all_grids[y_cord][x_cord-1].base_color == gray:
+                all_grids[y_cord][x_cord-1].has_circle = cir_black
+                if all_grids[y_cord][x_cord].base_color == black:
+                    all_grids[y_cord][x_cord].has_circle = cir_black
+                    all_grids[y_cord+1][x_cord].has_circle = cir_black
+                else:
+                    all_grids[y_cord-1][x_cord-1].has_circle = cir_black
+                    all_grids[y_cord-1][x_cord-2].has_circle = cir_black
+
+            elif sdir == 2:
+                continue
+            elif sdir == 3 and all_grids[y_cord][x_cord].base_color == gray:
+                all_grids[y_cord][x_cord - 1].has_circle = cir_white
+                if all_grids[y_cord][x_cord-1].base_color == white:
+                    all_grids[y_cord][x_cord-1].has_circle = cir_white
+                    all_grids[y_cord + 1][x_cord-1].has_circle = cir_white
+                else:
+                    all_grids[y_cord - 1][x_cord].has_circle = cir_white
+                    all_grids[y_cord - 1][x_cord + 1].has_circle = cir_white
+
+        if fdir == 3:
+            if sdir == 2 and all_grids[y_cord][x_cord].base_color == gray:
+                all_grids[y_cord - 1][x_cord - 1].has_circle = cir_black
+                if all_grids[y_cord - 1][x_cord].base_color == black:
+                    all_grids[y_cord - 1][x_cord].has_circle = cir_black
+                    all_grids[y_cord - 2][x_cord].has_circle = cir_black
+                else:
+                    all_grids[y_cord][x_cord - 1].has_circle = cir_black
+                    all_grids[y_cord][x_cord - 2].has_circle = cir_black
+
+            elif sdir == 3:
+                continue
+            elif sdir == 4 and all_grids[y_cord][x_cord - 1].base_color == gray:
+                all_grids[y_cord][x_cord - 1].has_circle = cir_white
+                if all_grids[y_cord][x_cord].base_color == black:
+                    all_grids[y_cord - 1][x_cord - 1].has_circle = cir_white
+                    all_grids[y_cord - 1][x_cord - 2].has_circle = cir_white
+                else:
+                    all_grids[y_cord][x_cord].has_circle = cir_white
+                    all_grids[y_cord + 1][x_cord].has_circle = cir_white
+
+        if fdir == 4:
+            if sdir == 1 and all_grids[y_cord][x_cord].base_color == gray:
+                all_grids[y_cord - 1][x_cord - 1].has_circle = cir_white
+                if all_grids[y_cord][x_cord - 1].base_color == black:
+                    all_grids[y_cord - 1][x_cord].has_circle = cir_white
+                    all_grids[y_cord - 2][x_cord].has_circle = cir_white
+                else:
+                    all_grids[y_cord][x_cord - 1].has_circle = cir_white
+                    all_grids[y_cord][x_cord - 2].has_circle = cir_white
+
+            elif sdir == 3 and all_grids[y_cord - 1][x_cord].base_color == gray:
+                all_grids[y_cord - 1][x_cord].has_circle = cir_black
+                if all_grids[y_cord][x_cord].base_color == black:
+                    all_grids[y_cord][x_cord].has_circle = cir_black
+                    all_grids[y_cord][x_cord + 1].has_circle = cir_black
+                else:
+                    all_grids[y_cord - 1][x_cord - 1].has_circle = cir_black
+                    all_grids[y_cord - 2][x_cord - 1].has_circle = cir_black
+
+            elif sdir == 4:
+                continue
+
+
+
 
 def get_grid_from_point(p):
     return p.x, p.y
