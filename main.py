@@ -3,7 +3,7 @@ grid_lenght = 64
 
 all_grids = []
 cir_white = 1
-cir_black = 2
+cir_black = 3
 white = 0
 black = 2
 gray = 1
@@ -53,7 +53,7 @@ class grid:
         self.is_e41_in_border = False
         # self.cycle_connectivity_num = 0
 
-        # self.is_yellow = False
+        self.is_yellow = False
         #
         # self.is_blue_1 = False
         # self.is_blue_2 = False
@@ -67,8 +67,8 @@ class grid:
         # self.is_in_q = False
         # self.is_in_q_border = False
         # self.is_corner = False
-        self.has_circle = 0            ####### 0 is none  ###### 1 is white  ####### 2 is black
-        # self.is_red = False
+        self.has_circle = 0            ####### 0 is none  ###### 1 is white  ####### 3 is black
+        self.is_red = False
 
         self.upper_grid = None
         self.downer_grid = None
@@ -146,6 +146,8 @@ def find_cycle_borders(all_grids, border_edges_list , m, n):
     border_grids = border_cells(border_edges_list, all_grids)
     inner_cells(border_grids_list[0])
     find_circles(border_edges_list, all_grids)
+    red_start_end = find_red_cells_start_end(border_edges_list, all_grids)
+    find_red_cells(red_start_end,all_grids, border_edges_list)
 
 
 #     edg = edg0
@@ -277,85 +279,231 @@ def find_circles(border, all_grids):
                 continue
             elif sdir == 2 and all_grids[y_cord - 1][x_cord].base_color == gray:
                 all_grids[y_cord-1][x_cord].has_circle = cir_white
+                all_grids[y_cord - 1][x_cord].is_yellow = True
                 if all_grids[y_cord][x_cord].base_color == white:
                     all_grids[y_cord][x_cord].has_circle = cir_white
+                    all_grids[y_cord][x_cord].is_yellow = True
                     all_grids[y_cord][x_cord + 1].has_circle = cir_white
+                    all_grids[y_cord][x_cord + 1].is_yellow = True
                 else:
                     all_grids[y_cord-1][x_cord-1].has_circle = cir_white
+                    all_grids[y_cord - 1][x_cord - 1].is_yellow = True
                     all_grids[y_cord-2][x_cord-1].has_circle =cir_white
+                    all_grids[y_cord - 2][x_cord - 1].is_yellow = True
 
             elif sdir == 4 and all_grids[y_cord][x_cord].base_color == gray:
                 all_grids[y_cord][x_cord].has_circle = cir_black
+                all_grids[y_cord][x_cord].is_yellow = True
                 if all_grids[y_cord][x_cord - 1].base_color == black:
                     all_grids[y_cord][x_cord - 1].has_circle = cir_black
+                    all_grids[y_cord][x_cord - 1].is_yellow = True
                     all_grids[y_cord + 1][x_cord - 1].has_circle = cir_black
+                    all_grids[y_cord + 1][x_cord - 1].is_yellow = True
                 else:
                     all_grids[y_cord - 1][x_cord].has_circle = cir_black
+                    all_grids[y_cord - 1][x_cord].is_yellow = True
                     all_grids[y_cord - 1][x_cord + 1].has_circle = cir_black
+                    all_grids[y_cord - 1][x_cord + 1].is_yellow = True
 
         if fdir == 2:
             if sdir == 1 and all_grids[y_cord][x_cord-1].base_color == gray:
                 all_grids[y_cord][x_cord-1].has_circle = cir_black
+                all_grids[y_cord][x_cord - 1].is_yellow = True
                 if all_grids[y_cord][x_cord].base_color == black:
                     all_grids[y_cord][x_cord].has_circle = cir_black
+                    all_grids[y_cord][x_cord].is_yellow = True
                     all_grids[y_cord+1][x_cord].has_circle = cir_black
+                    all_grids[y_cord + 1][x_cord].is_yellow = True
                 else:
                     all_grids[y_cord-1][x_cord-1].has_circle = cir_black
+                    all_grids[y_cord - 1][x_cord - 1].is_yellow = True
                     all_grids[y_cord-1][x_cord-2].has_circle = cir_black
+                    all_grids[y_cord - 1][x_cord - 2].is_yellow = True
 
             elif sdir == 2:
                 continue
             elif sdir == 3 and all_grids[y_cord][x_cord].base_color == gray:
                 all_grids[y_cord][x_cord - 1].has_circle = cir_white
+                all_grids[y_cord][x_cord - 1].is_yellow = True
                 if all_grids[y_cord][x_cord-1].base_color == white:
                     all_grids[y_cord][x_cord-1].has_circle = cir_white
+                    all_grids[y_cord][x_cord - 1].is_yellow = True
                     all_grids[y_cord + 1][x_cord-1].has_circle = cir_white
+                    all_grids[y_cord + 1][x_cord - 1].is_yellow = True
                 else:
                     all_grids[y_cord - 1][x_cord].has_circle = cir_white
+                    all_grids[y_cord - 1][x_cord].is_yellow = True
                     all_grids[y_cord - 1][x_cord + 1].has_circle = cir_white
+                    all_grids[y_cord - 1][x_cord + 1].is_yellow = True
 
         if fdir == 3:
             if sdir == 2 and all_grids[y_cord][x_cord].base_color == gray:
                 all_grids[y_cord - 1][x_cord - 1].has_circle = cir_black
+                all_grids[y_cord - 1][x_cord - 1].is_yellow = True
                 if all_grids[y_cord - 1][x_cord].base_color == black:
                     all_grids[y_cord - 1][x_cord].has_circle = cir_black
+                    all_grids[y_cord - 1][x_cord].is_yellow = True
                     all_grids[y_cord - 2][x_cord].has_circle = cir_black
+                    all_grids[y_cord - 2][x_cord].is_yellow = True
                 else:
                     all_grids[y_cord][x_cord - 1].has_circle = cir_black
+                    all_grids[y_cord][x_cord - 1].is_yellow = True
                     all_grids[y_cord][x_cord - 2].has_circle = cir_black
+                    all_grids[y_cord][x_cord - 2].is_yellow = True
 
             elif sdir == 3:
                 continue
             elif sdir == 4 and all_grids[y_cord][x_cord - 1].base_color == gray:
                 all_grids[y_cord][x_cord - 1].has_circle = cir_white
+                all_grids[y_cord][x_cord - 1].is_yellow = True
                 if all_grids[y_cord][x_cord].base_color == black:
                     all_grids[y_cord - 1][x_cord - 1].has_circle = cir_white
+                    all_grids[y_cord - 1][x_cord - 1].is_yellow = True
                     all_grids[y_cord - 1][x_cord - 2].has_circle = cir_white
+                    all_grids[y_cord - 1][x_cord - 2].is_yellow = True
                 else:
                     all_grids[y_cord][x_cord].has_circle = cir_white
+                    all_grids[y_cord][x_cord].is_yellow = True
                     all_grids[y_cord + 1][x_cord].has_circle = cir_white
+                    all_grids[y_cord + 1][x_cord].is_yellow = True
 
         if fdir == 4:
             if sdir == 1 and all_grids[y_cord][x_cord].base_color == gray:
                 all_grids[y_cord - 1][x_cord - 1].has_circle = cir_white
+                all_grids[y_cord - 1][x_cord - 1].is_yellow = True
                 if all_grids[y_cord][x_cord - 1].base_color == black:
                     all_grids[y_cord - 1][x_cord].has_circle = cir_white
+                    all_grids[y_cord - 1][x_cord].is_yellow = True
                     all_grids[y_cord - 2][x_cord].has_circle = cir_white
+                    all_grids[y_cord - 2][x_cord].is_yellow = True
                 else:
                     all_grids[y_cord][x_cord - 1].has_circle = cir_white
+                    all_grids[y_cord][x_cord - 1].is_yellow = True
                     all_grids[y_cord][x_cord - 2].has_circle = cir_white
+                    all_grids[y_cord][x_cord - 2].is_yellow = True
 
             elif sdir == 3 and all_grids[y_cord - 1][x_cord].base_color == gray:
                 all_grids[y_cord - 1][x_cord].has_circle = cir_black
+                all_grids[y_cord - 1][x_cord].is_yellow = True
                 if all_grids[y_cord][x_cord].base_color == black:
                     all_grids[y_cord][x_cord].has_circle = cir_black
+                    all_grids[y_cord][x_cord].is_yellow = True
                     all_grids[y_cord][x_cord + 1].has_circle = cir_black
+                    all_grids[y_cord][x_cord + 1].is_yellow = True
                 else:
                     all_grids[y_cord - 1][x_cord - 1].has_circle = cir_black
+                    all_grids[y_cord - 1][x_cord - 1].is_yellow = True
                     all_grids[y_cord - 2][x_cord - 1].has_circle = cir_black
+                    all_grids[y_cord - 2][x_cord - 1].is_yellow = True
 
             elif sdir == 4:
                 continue
+
+def coloring_90_deg(x_cord, y_cord, all_grids):
+    #todo i can use this and next method for easy use in before method if fdir+1 == sdir call this and if fdir-1 == sdir call next method
+    print("under construction")
+
+def coloring_270_deg(x_cord, y_cord, all_grids):
+    #todo use last todo for more information
+    print("under construction")
+
+def find_red_cells_start_end(border, all_grids):
+
+    for i in range(0, len(border)-1):
+        fdir = get_direction(border[i])             #first
+        sdir = get_direction(border[i+1])           #second
+        x_cord = border[i].p2.x
+        y_cord = border[i].p2.y
+        start_ends = [[None,None]]
+        if fdir == 1:
+            if sdir == 1:
+                if all_grids[y_cord][x_cord].is_yellow == True and all_grids[y_cord - 1][x_cord].is_yellow == True:
+                    b = [i+1, None]
+                    start_ends.append(b)
+                elif all_grids[y_cord - 1][x_cord - 1].is_yellow == True and all_grids[y_cord][x_cord - 1].is_yellow == True:
+                    start_ends[-1][1] = i
+
+        elif fdir == 2:
+            if sdir == 2:
+                if all_grids[y_cord][x_cord - 1].is_yellow == True and all_grids[y_cord][x_cord].is_yellow == True:
+                    b = [i+1, None]
+                    start_ends.append(b)
+                elif all_grids[y_cord - 1][x_cord - 1].is_yellow == True and all_grids[y_cord - 1][x_cord].is_yellow == True:
+                    start_ends[-1][1] = i
+
+        elif fdir == 3:
+            if sdir == 3:
+                if all_grids[y_cord - 1][x_cord - 1].is_yellow == True and all_grids[y_cord][x_cord - 1].is_yellow == True:
+                    b = [i + 1, None]
+                    start_ends.append(b)
+                elif all_grids[y_cord - 1][x_cord].is_yellow == True and all_grids[y_cord][x_cord].is_yellow == True:
+                    start_ends[-1][1] = i
+                else:
+                    continue
+        elif fdir == 4:
+            if sdir == 4:
+                if all_grids[y_cord][x_cord - 1].is_yellow == True and all_grids[y_cord][x_cord].is_yellow == True:
+                    b = [i+1, None]
+                    start_ends.append(b)
+                elif all_grids[y_cord - 1][x_cord - 1].is_yellow == True and all_grids[y_cord - 1][x_cord].is_yellow == True:
+                    start_ends[-1][1] = i
+
+    if start_ends[0][1] is not None:
+        start_ends[0][0] = start_ends[-1][0]
+        return start_ends[:-1]
+    else:
+        return start_ends[1:]
+
+
+def find_red_cells(start_ends, all_grids, border):
+    for i in range(len(start_ends)):
+        for j in range(start_ends[i][1] - start_ends[i][0] + 1):
+            start = start_ends[i][0] + j
+            fdir = get_direction(border[start])
+            sdir = get_direction(border[start + 1])
+            x_cord = border[start].p2.x
+            y_cord = border[start].p2.y
+
+            if fdir == 1:
+                if sdir == 1:
+                    all_grids[y_cord][x_cord].is_red = True
+                    all_grids[y_cord - 1][x_cord].is_red = True
+                if sdir == 2:
+                    all_grids[y_cord][x_cord].is_red = True
+                    all_grids[y_cord][x_cord - 1].is_red = True
+                if sdir == 4:
+                    all_grids[y_cord - 1][x_cord - 1].is_red = True
+                    all_grids[y_cord - 1][x_cord].is_red = True
+            if fdir == 2:
+                if sdir == 1:
+                    all_grids[y_cord][x_cord].is_red = True
+                    all_grids[y_cord - 1][x_cord].is_red = True
+                if sdir == 2:
+                    all_grids[y_cord][x_cord].is_red = True
+                    all_grids[y_cord][x_cord - 1].is_red = True
+                if sdi == 3:
+                    all_grids[y_cord - 1][x_cord - 1].is_red = True
+                    all_grids[y_cord][x_cord - 1].is_red = True
+            if fdir == 3:
+                if sdir == 2:
+                    all_grids[y_cord][x_cord].is_red = True
+                    all_grids[y_cord][x_cord - 1].is_red = True
+                if sdir == 3:
+                    all_grids[y_cord - 1][x_cord - 1].is_red = True
+                    all_grids[y_cord][x_cord - 1].is_red = True
+                if sdir == 4:
+                    all_grids[y_cord - 1][x_cord - 1].is_red = True
+                    all_grids[y_cord - 1][x_cord].is_red = True
+            if fdir == 4:
+                if sdir == 1:
+                    all_grids[y_cord][x_cord].is_red = True
+                    all_grids[y_cord - 1][x_cord].is_red = True
+                if sdir == 3:
+                    all_grids[y_cord - 1][x_cord - 1].is_red = True
+                    all_grids[y_cord][x_cord - 1].is_red = True
+                if sdir == 4:
+                    all_grids[y_cord - 1][x_cord - 1].is_red = True
+                    all_grids[y_cord - 1][x_cord].is_red = True
 
 
 
