@@ -404,7 +404,7 @@ def coloring_90_deg(x_cord, y_cord, all_grids):
     print("under construction")
 
 def coloring_270_deg(x_cord, y_cord, all_grids):
-    #todo use last todo for more information ...
+    #todo use last todo for more information ... ...
     print("under construction")
 
 def find_red_cells_start_end(border, all_grids):
