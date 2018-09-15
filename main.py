@@ -1,34 +1,63 @@
 
-grid_lenght = 64
+import pygame
+import sys
 
-all_grids = []
-cir_white = 1
-cir_black = 3
-white = 0
-black = 2
-gray = 1
+grid_lenght = 48
+w = 7
+backgroud_color = (255,255,255)
+rec_white, rec_black, rec_grey = (200, 200, 200), (0, 0, 0), (128, 128, 128)
+rec_white_back = (230, 230, 230)
+rec_blue = (0,0,255)
+rec_red = (255,50,50)
+rec_yellow = (255,255,0)
+rec_magenta = (255,100,255)
+
+screen = pygame.display.set_mode((900,900))
+screen.fill(backgroud_color)
+
 
 class point:
-    def __init__ (self,x,y):
+    def __init__(self, x, y):
         self.x = x
         self.y = y
-        
-    def is_equal(self,p):
+
+    def is_equal(self, p):
         if self.x == p.x and self.y == p.y:
             return 1
         else:
             return 0
+
     def print_point(self):
         print(self.x, self.y)
+
+shift = point(50,50)
+horizontal_start = point(shift.x + int((w+1)/2), shift.y + w)
+vertical_start = point(shift.x + w, shift.y + int((w+1)/2))
+all_grids = []
+
+cir_white = 1
+cir_black = 3
+
+white = 0
+black = 2
+grey = 1
+
+
 
 class edge:
     def __init__ (self, p1 , p2):
         self.p1 = p1
         self.p2 = p2
-        
+        self.c1 = (255,100,255)
+        self.c2 = (255,100,255)
+
+
     def print_edge(self):
         print ((self.p1.x, self.p1.y) , (self.p2.x, self.p2.y))
 
+    def draw(self, screen, width, color_vector):
+        print("salam")
+        
 class grid:
     def __init__ (self, x, y):
         self.x = x
@@ -43,7 +72,7 @@ class grid:
         self.e34 = edge(self.p3, self.p4)
         self.e41 = edge(self.p4, self.p1)
 
-        self.base_color = 0            ######## 0 is white  ####### 1 is gray  ######## 2 is black
+        self.base_color = 0            ######## 0 is white  ####### 1 is grey  ######## 2 is black
         self.visited = False            ####### this is for finding inner cells based on using             """"BFS""""
         self.is_in_cycle = False
         self.is_in_cycle_border = False
@@ -51,6 +80,11 @@ class grid:
         self.is_e23_in_border = False
         self.is_e34_in_border = False
         self.is_e41_in_border = False
+        ##               [black, red, yellow, blue, magenta]
+        self.e12_color = [0    , 0  , 0     , 0   , 0]
+        self.e23_color = [0, 0, 0, 0, 0]
+        self.e34_color = [0, 0, 0, 0, 0]
+        self.e41_color = [0, 0, 0, 0, 0]
         # self.cycle_connectivity_num = 0
 
         self.is_yellow = False
@@ -59,6 +93,7 @@ class grid:
         # self.is_blue_2 = False
         # self.is_blue_3 = False
         # self.is_blue_border = False
+
         #
         # self.is_magenta_1 = False
         # self.is_magenta_2 = False
@@ -108,11 +143,61 @@ class board:
                         all_grids[j][i].base_color = 1
                     else:
                         all_grids[j][i].base_color = 0
+        #############################
 
+        # for j in range(m-1):
+        #     for i in range(n-1):
+        #         color = all_grids[j][i].base_color
+        #         if color == 0:
+        #             pygame.draw.line(screen, rec_white, [(grid_lenght+width) * j, (grid_lenght+width) * i] ,[(grid_lenght+width) * (j+1), (grid_lenght+width) * i] ,width)
+        #         if color == 1:
+        #             pygame.draw.line(screen, rec_grey, [(grid_lenght+width) * j, (grid_lenght+width) * i] ,[(grid_lenght+width) * (j+1), (grid_lenght+width) * i],width)
+        #         if color == 2:
+        #             pygame.draw.line(screen, rec_black, [(grid_lenght+width) * j, (grid_lenght+width) * i] ,[(grid_lenght+width) * (j+1), (grid_lenght+width) * i],width)
+        #         pygame.display.update()
+        #         pygame.time.delay(20)
 
+        
 def find_cycle_borders(all_grids, border_edges_list , m, n):
     border_grids_list = []
     miny = m
+    
+#     for u in range(10):
+#         if u%2 == 1:
+#             pygame.draw.line(screen, (255,0,0), [0,21+ 10*u], [0, 19 + 10*(u+1)], 10)
+#         else:
+#             pygame.draw.line(screen, (0,0,0), [0,21+ 10*u], [0, 19 + 10*(u+1)], 10)
+#
+# #    pygame.draw.line(screen, (255,0,0), [150,270], [403, 740], 10)
+#     pygame.display.update()
+#
+#     for u in range(10):
+#         if u%2 == 1:
+#             pygame.draw.line(screen, (0,0,255), [4,121+ 10*u], [4, 119 + 10*(u+1)], 7)
+#         else:
+#             pygame.draw.line(screen, (0,0,0), [4,121+ 10*u], [4, 119 + 10*(u+1)], 7)
+#
+#     pygame.display.update()
+#
+#     for u in range(10):
+#         if u%2 == 1:
+#             pygame.draw.line(screen, (255,0,255), [480,21+ 10*u], [480, 19 + 10*(u+1)], 10)
+#         else:
+#             pygame.draw.line(screen, (255,0,255), [480,21+ 10*u], [480, 19 + 10*(u+1)], 10)
+#
+#     pygame.display.update()
+#
+#     pygame.draw.line(screen, (0,0,0), [490,121], [490, 19 + 200], 4)
+#     pygame.display.update()
+#     pygame.draw.line(screen, (0,0,255), [495,121], [495, 19 + 200], 4)
+#     pygame.display.update()
+#
+#
+#     pygame.draw.line(screen, (255,0,0), [490,221], [490, 19 + 250], 4)
+#     pygame.display.update()
+#     pygame.draw.line(screen, (200,200,200), [495,221], [495, 19 + 250], 4)
+#     pygame.display.update()
+#
     
     e = border_edges_list[0]
     minimal_list = []
@@ -147,8 +232,12 @@ def find_cycle_borders(all_grids, border_edges_list , m, n):
     inner_cells(border_grids_list[0])
     find_circles(border_edges_list, all_grids)
     red_start_end = find_red_cells_start_end(border_edges_list, all_grids)
-    find_red_cells(red_start_end,all_grids, border_edges_list)
+    red_cells = find_red_cells(red_start_end,all_grids, border_edges_list)
+    update_red_edges_color(all_grids)
 
+    for j in range(m):
+        for i in range(n):
+            print(i,j, all_grids[j][i].is_yellow)
 
 #     edg = edg0
 #     d = 0
@@ -277,7 +366,7 @@ def find_circles(border, all_grids):
         if fdir == 1:
             if sdir == 1:
                 continue
-            elif sdir == 2 and all_grids[y_cord - 1][x_cord].base_color == gray:
+            elif sdir == 2 and all_grids[y_cord - 1][x_cord].base_color == grey:
                 all_grids[y_cord-1][x_cord].has_circle = cir_white
                 all_grids[y_cord - 1][x_cord].is_yellow = True
                 if all_grids[y_cord][x_cord].base_color == white:
@@ -291,7 +380,7 @@ def find_circles(border, all_grids):
                     all_grids[y_cord-2][x_cord-1].has_circle =cir_white
                     all_grids[y_cord - 2][x_cord - 1].is_yellow = True
 
-            elif sdir == 4 and all_grids[y_cord][x_cord].base_color == gray:
+            elif sdir == 4 and all_grids[y_cord][x_cord].base_color == grey:
                 all_grids[y_cord][x_cord].has_circle = cir_black
                 all_grids[y_cord][x_cord].is_yellow = True
                 if all_grids[y_cord][x_cord - 1].base_color == black:
@@ -306,7 +395,7 @@ def find_circles(border, all_grids):
                     all_grids[y_cord - 1][x_cord + 1].is_yellow = True
 
         if fdir == 2:
-            if sdir == 1 and all_grids[y_cord][x_cord-1].base_color == gray:
+            if sdir == 1 and all_grids[y_cord][x_cord-1].base_color == grey:
                 all_grids[y_cord][x_cord-1].has_circle = cir_black
                 all_grids[y_cord][x_cord - 1].is_yellow = True
                 if all_grids[y_cord][x_cord].base_color == black:
@@ -322,7 +411,7 @@ def find_circles(border, all_grids):
 
             elif sdir == 2:
                 continue
-            elif sdir == 3 and all_grids[y_cord][x_cord].base_color == gray:
+            elif sdir == 3 and all_grids[y_cord][x_cord].base_color == grey:
                 all_grids[y_cord][x_cord - 1].has_circle = cir_white
                 all_grids[y_cord][x_cord - 1].is_yellow = True
                 if all_grids[y_cord][x_cord-1].base_color == white:
@@ -337,7 +426,7 @@ def find_circles(border, all_grids):
                     all_grids[y_cord - 1][x_cord + 1].is_yellow = True
 
         if fdir == 3:
-            if sdir == 2 and all_grids[y_cord][x_cord].base_color == gray:
+            if sdir == 2 and all_grids[y_cord][x_cord].base_color == grey:
                 all_grids[y_cord - 1][x_cord - 1].has_circle = cir_black
                 all_grids[y_cord - 1][x_cord - 1].is_yellow = True
                 if all_grids[y_cord - 1][x_cord].base_color == black:
@@ -353,7 +442,7 @@ def find_circles(border, all_grids):
 
             elif sdir == 3:
                 continue
-            elif sdir == 4 and all_grids[y_cord][x_cord - 1].base_color == gray:
+            elif sdir == 4 and all_grids[y_cord][x_cord - 1].base_color == grey:
                 all_grids[y_cord][x_cord - 1].has_circle = cir_white
                 all_grids[y_cord][x_cord - 1].is_yellow = True
                 if all_grids[y_cord][x_cord].base_color == black:
@@ -368,7 +457,7 @@ def find_circles(border, all_grids):
                     all_grids[y_cord + 1][x_cord].is_yellow = True
 
         if fdir == 4:
-            if sdir == 1 and all_grids[y_cord][x_cord].base_color == gray:
+            if sdir == 1 and all_grids[y_cord][x_cord].base_color == grey:
                 all_grids[y_cord - 1][x_cord - 1].has_circle = cir_white
                 all_grids[y_cord - 1][x_cord - 1].is_yellow = True
                 if all_grids[y_cord][x_cord - 1].base_color == black:
@@ -382,7 +471,7 @@ def find_circles(border, all_grids):
                     all_grids[y_cord][x_cord - 2].has_circle = cir_white
                     all_grids[y_cord][x_cord - 2].is_yellow = True
 
-            elif sdir == 3 and all_grids[y_cord - 1][x_cord].base_color == gray:
+            elif sdir == 3 and all_grids[y_cord - 1][x_cord].base_color == grey:
                 all_grids[y_cord - 1][x_cord].has_circle = cir_black
                 all_grids[y_cord - 1][x_cord].is_yellow = True
                 if all_grids[y_cord][x_cord].base_color == black:
@@ -408,13 +497,12 @@ def coloring_270_deg(x_cord, y_cord, all_grids):
     print("under construction")
 
 def find_red_cells_start_end(border, all_grids):
-
+    start_ends = [[None, None]]
     for i in range(0, len(border)-1):
         fdir = get_direction(border[i])             #first
         sdir = get_direction(border[i+1])           #second
         x_cord = border[i].p2.x
         y_cord = border[i].p2.y
-        start_ends = [[None,None]]
         if fdir == 1:
             if sdir == 1:
                 if all_grids[y_cord][x_cord].is_yellow == True and all_grids[y_cord - 1][x_cord].is_yellow == True:
@@ -443,10 +531,10 @@ def find_red_cells_start_end(border, all_grids):
         elif fdir == 4:
             if sdir == 4:
                 if all_grids[y_cord][x_cord - 1].is_yellow == True and all_grids[y_cord][x_cord].is_yellow == True:
+                    start_ends[-1][1] = i
+                elif all_grids[y_cord - 1][x_cord - 1].is_yellow == True and all_grids[y_cord - 1][x_cord].is_yellow == True:
                     b = [i+1, None]
                     start_ends.append(b)
-                elif all_grids[y_cord - 1][x_cord - 1].is_yellow == True and all_grids[y_cord - 1][x_cord].is_yellow == True:
-                    start_ends[-1][1] = i
 
     if start_ends[0][1] is not None:
         start_ends[0][0] = start_ends[-1][0]
@@ -456,54 +544,92 @@ def find_red_cells_start_end(border, all_grids):
 
 
 def find_red_cells(start_ends, all_grids, border):
+    grids = []
     for i in range(len(start_ends)):
-        for j in range(start_ends[i][1] - start_ends[i][0] + 1):
-            start = start_ends[i][0] + j
+        rng = 0
+        if start_ends[i][1] - start_ends[i][0] + 1 < 0:
+            rng = len(border)-(start_ends[i][0] - start_ends[i][1]) + 1
+        else:
+            rng = start_ends[i][1] - start_ends[i][0] + 1
+        start = start_ends[i][0] -1
+        for j in range(rng):
+            start += 1
+            if start == len(border):
+                start = 0
             fdir = get_direction(border[start])
-            sdir = get_direction(border[start + 1])
+            after_start = start +1
+            if after_start == len(border):
+                after_start = 1
+            sdir = get_direction(border[after_start])
             x_cord = border[start].p2.x
             y_cord = border[start].p2.y
 
             if fdir == 1:
                 if sdir == 1:
                     all_grids[y_cord][x_cord].is_red = True
+                    grids.append(all_grids[y_cord][x_cord])
                     all_grids[y_cord - 1][x_cord].is_red = True
+                    grids.append(all_grids[y_cord - 1][x_cord])
                 if sdir == 2:
                     all_grids[y_cord][x_cord].is_red = True
+                    grids.append(all_grids[y_cord][x_cord])
                     all_grids[y_cord][x_cord - 1].is_red = True
+                    grids.append(all_grids[y_cord][x_cord - 1])
                 if sdir == 4:
                     all_grids[y_cord - 1][x_cord - 1].is_red = True
+                    grids.append(all_grids[y_cord - 1][x_cord - 1])
                     all_grids[y_cord - 1][x_cord].is_red = True
+                    grids.append(all_grids[y_cord - 1][x_cord])
             if fdir == 2:
                 if sdir == 1:
                     all_grids[y_cord][x_cord].is_red = True
+                    grids.append(all_grids[y_cord][x_cord])
                     all_grids[y_cord - 1][x_cord].is_red = True
+                    grids.append(all_grids[y_cord - 1][x_cord])
                 if sdir == 2:
                     all_grids[y_cord][x_cord].is_red = True
+                    grids.append(all_grids[y_cord][x_cord])
                     all_grids[y_cord][x_cord - 1].is_red = True
-                if sdi == 3:
+                    grids.append(all_grids[y_cord][x_cord - 1])
+                if sdir == 3:
                     all_grids[y_cord - 1][x_cord - 1].is_red = True
+                    grids.append(all_grids[y_cord - 1][x_cord - 1])
                     all_grids[y_cord][x_cord - 1].is_red = True
+                    grids.append(all_grids[y_cord][x_cord - 1])
             if fdir == 3:
                 if sdir == 2:
                     all_grids[y_cord][x_cord].is_red = True
+                    grids.append(all_grids[y_cord][x_cord])
                     all_grids[y_cord][x_cord - 1].is_red = True
+                    grids.append(all_grids[y_cord][x_cord - 1])
                 if sdir == 3:
                     all_grids[y_cord - 1][x_cord - 1].is_red = True
+                    grids.append(all_grids[y_cord - 1][x_cord - 1])
                     all_grids[y_cord][x_cord - 1].is_red = True
+                    grids.append(all_grids[y_cord][x_cord - 1])
                 if sdir == 4:
                     all_grids[y_cord - 1][x_cord - 1].is_red = True
+                    grids.append(all_grids[y_cord - 1][x_cord - 1])
                     all_grids[y_cord - 1][x_cord].is_red = True
+                    grids.append(all_grids[y_cord - 1][x_cord])
             if fdir == 4:
                 if sdir == 1:
                     all_grids[y_cord][x_cord].is_red = True
+                    grids.append(all_grids[y_cord][x_cord])
                     all_grids[y_cord - 1][x_cord].is_red = True
+                    grids.append(all_grids[y_cord - 1][x_cord])
                 if sdir == 3:
                     all_grids[y_cord - 1][x_cord - 1].is_red = True
+                    grids.append(all_grids[y_cord - 1][x_cord - 1])
                     all_grids[y_cord][x_cord - 1].is_red = True
+                    grids.append(all_grids[y_cord][x_cord - 1])
                 if sdir == 4:
                     all_grids[y_cord - 1][x_cord - 1].is_red = True
+                    grids.append(all_grids[y_cord - 1][x_cord - 1])
                     all_grids[y_cord - 1][x_cord].is_red = True
+                    grids.append(all_grids[y_cord - 1][x_cord])
+
+    return grids
 
 
 
@@ -527,54 +653,223 @@ def get_direction(edg):
 
 
 
+def community_of_grids(grids, type):
+    edges = []
+    if type == 1:                           ##### type 1 is red
+        for g in grids:
+            if g.upper_grid is not None:
+                if g.upper_grid.is_red:
+                    continue
+                else:
+                    edges.append(g.e12)
+            if g.lefter_grid is not None:
+                if g.lefter_grid.is_red:
+                    continue
+                else:
+                    edges.append(g.e41)
+            if g.downer_grid is not None:
+                if g.downer_grid.is_red:
+                    continue
+                else:
+                    edges.append(g.e34)
+            if g.righter_grid is not None:
+                if g.righter_grid.is_red:
+                    continue
+                else:
+                    edges.append(g.e23)
+        return edges
+    if type == 2:                           ##### type 2 is yellow
+        #todo
+        print(" type 2 is yello")
+    if type == 3:                           ##### type 3 is blue
+        #todo
+        print("type 3 is blue")
+    if type == 4:                           ##### type 4 is magenta
+        #todo
+        print("type 4 is magenta")
+        
+        
+
+
+def update_black_edges_color(all_grids):
+    for j in range(m):
+        for i in range(n):
+            g = all_grids[j][i]
+            if g.is_e12_in_border:
+                g.e12.c1 = rec_black
+                g.upper_grid.e34.c1 = rec_black
+            if g.is_e23_in_border:
+                g.e23.c1 = rec_black
+                g.righter_grid.e41.c1 = rec_black
+            if g.is_e34_in_border:
+                g.e34.c1 = rec_black
+                g.downer_grid.e12.c1 = rec_black
+            if g.is_e41_in_border:
+                g.e41.c1 = rec_black
+                g.lefter_grid.e23.c1 = rec_black
+
+def update_red_edges_color(all_grids):
+    for j in range(m):
+        for i in range(n):
+            g = all_grids[j][i]
+            if g.is_red == True:
+                if g.upper_grid is not None and g.upper_grid.is_red == False:
+                    g.e12.c1 = rec_red
+                    g.upper_grid.e34.c1 = rec_red
+                if g.righter_grid is not None and g.righter_grid.is_red == False:
+                    g.e23.c1 = rec_red
+                    g.righter_grid.e41.c1 = rec_red
+                if g.downer_grid is not None and g.downer_grid.is_red == False:
+                    g.e34.c1 = rec_red
+                    g.downer_grid.e12.c1 = rec_red
+                if g.lefter_grid is not None and g.lefter_grid.is_red == False:
+                    g.e41.c1 = rec_red
+                    g.lefter_grid.e23.c1 = rec_red
+
+def update_yellow_edges_color(all_grids):
+    for j in range(m):
+        for i in range(n):
+            g = all_grids[j][i]
+            if g.is_yellow:
+                                                            ####  red edge is never black so c1 = red
+                if g.upper_grid.is_yellow== False:
+                    g.e12.c2 = rec_yellow
+                    g.upper_grid.e34.c2 = rec_yellow
+                if g.righter_grid.is_yellow== False:
+                    g.e23.c2 = rec_yellow
+                    g.righter_grid.e41.c2 = rec_yellow
+                if g.downer_grid.is_yellow == False:
+                    g.e34.c2 = rec_yellow
+                    g.downer_grid.e12.c2 = rec_yellow
+                if g.lefter_grid is not None and g.lefter_grid.is_yellow== False:
+                    g.e41.c2 = rec_yellow
+                    g.lefter_grid.e23.c2 = rec_yellow
+
+
+def rendering(all_grids, m , n):
+    update_black_edges_color(all_grids)
+    update_yellow_edges_color(all_grids)
+    for j in range(m):
+        for i in range(n):
+            if i %2 ==1:
+                if j%2 ==1:
+                    pygame.draw.rect(screen, (200,200,200), [shift.x + i*(grid_lenght + w) + w, shift.y + j*(grid_lenght + w) + w, grid_lenght,grid_lenght])
+                    pygame.display.update()
+                    pygame.time.delay(20)
+#                    print(i,j, all_grids[j][i].is_yellow)
+                else:
+                    pygame.draw.rect(screen, (225,225,225), [shift.x + i*(grid_lenght + w) + w, shift.y + j*(grid_lenght + w) + w, grid_lenght,grid_lenght])
+                    pygame.display.update()
+                    pygame.time.delay(20)
+#                    print(i,j, all_grids[j][i].is_yellow)
+            else:
+                if j%2 ==1:
+                    pygame.draw.rect(screen, (225,225,225), [shift.x + i*(grid_lenght + w) + w, shift.y + j*(grid_lenght + w) + w, grid_lenght,grid_lenght])
+                    pygame.display.update()
+                    pygame.time.delay(20)
+#                    print(i,j, all_grids[j][i].is_yellow)
+                else:
+                    pygame.draw.rect(screen, (250,250,250), [shift.x + i*(grid_lenght + w) + w, shift.y + j*(grid_lenght + w) + w, grid_lenght,grid_lenght])
+                    pygame.display.update()
+                    pygame.time.delay(20)
+#                    print(i,j, all_grids[j][i].is_yellow)
+                    
+    for j in range(m):
+        for i in range(n):
+            c1 = all_grids[j][i].e12.c1
+            c2 = all_grids[j][i].e12.c2
+            c3 = all_grids[j][i].e41.c1
+            c4 = all_grids[j][i].e41.c2
+            for u in range(4):
+                if u%2 == 0:
+                    x1 = vertical_start.x + i*(grid_lenght+w) +  int(grid_lenght/4)*u
+                    y1 = vertical_start.y + j*(grid_lenght+w) -1
+                    x2 = vertical_start.x + i*(grid_lenght+w) +  int(grid_lenght/4)*(u+1)
+                    y2 = vertical_start.y + j*(grid_lenght+w) -1
+                    pygame.draw.line(screen, c1, [x1, y1], [x2, y2], w)
+                    pygame.display.update()
+                    pygame.time.delay(20)
+
+                else:
+                    x1 = vertical_start.x + i*(grid_lenght+w) +  int(grid_lenght/4)*u
+                    y1 = vertical_start.y + j*(grid_lenght+w) -1
+                    x2 = vertical_start.x + i*(grid_lenght+w) +  int(grid_lenght/4)*(u+1)
+                    y2 = vertical_start.y + j*(grid_lenght+w) -1
+                    pygame.draw.line(screen, c2, [x1, y1], [x2, y2], w)
+                    pygame.display.update()
+                    pygame.time.delay(20)
+                    
+                if u%2 == 0:
+                    x1 = horizontal_start.x + i*(grid_lenght+w) -1
+                    y1 = horizontal_start.y + j*(grid_lenght+w) +int(grid_lenght/4)*u 
+                    x2 = horizontal_start.x + i*(grid_lenght+w) -1
+                    y2 = horizontal_start.y + j*(grid_lenght+w) +int(grid_lenght/4)*(u+1)
+                    pygame.draw.line(screen, c3, [x1, y1], [x2, y2], w)
+                    pygame.display.update()
+                    pygame.time.delay(20)
+                else:
+                    x1 = horizontal_start.x + i*(grid_lenght+w) -1
+                    y1 = horizontal_start.y + j*(grid_lenght+w) +int(grid_lenght/4)*u
+                    x2 = horizontal_start.x + i*(grid_lenght+w) -1
+                    y2 = horizontal_start.y + j*(grid_lenght+w) +int(grid_lenght/4)*(u+1)
+                    pygame.draw.line(screen, c4, [x1, y1], [x2, y2], w)
+                    pygame.display.update()
+                    pygame.time.delay(20)
+                                        
+        
 
 ###### inputs
     
-m = 10
-n = 11
+m = 14
+n = 15
     
 bord = board(m,n)
 
-p1 = point(1,1)
-p2 = point(2,1)
-p3 = point(3,1)
-p4 = point(4,1)
-p5 = point(4,2)
-p6 = point(4,3)
-p7 = point(4,4)
-p8 = point(5,4)
-p9 = point(6,4)
-p10 = point(7,4)
-p11 = point(7,3)
-p12 = point(7,2)
-p13 = point(7,1)
-p14 = point(8,1)
-p15 = point(9,1)
-p16 = point(10,1)
-p17 = point(10,2)
-p18 = point(10,3)
-p19 = point(10,4)
-p20 = point(10,5)
-p21 = point(10,6)
-p22 = point(9,6)
-p23 = point(8,6)
-p24 = point(7,6)
-p25 = point(6,6)
-p26 = point(6,7)
-p27 = point(6,8)
-p28 = point(6,9)
-p29 = point(5,9)
-p30 = point(4,9)
-p31 = point(3,9)
-p32 = point(2,9)
-p33 = point(1,9)
-p34 = point(1,8)
-p35 = point(1,7)
-p36 = point(1,6)
-p37 = point(1,5)
-p38 = point(1,4)
-p39 = point(1,3)
-p40 = point(1,2)
+p1 = point(3,3)
+p2 = point(4,3)
+p3 = point(5,3)
+p4 = point(6,3)
+p5 = point(6,4)
+p6 = point(6,5)
+p7 = point(6,6)
+
+p8  = point(7,6)
+p9  = point(8,6)
+p10 = point(9,6)
+p11 = point(9,5)
+p12 = point(9,4)
+p13 = point(9,3)
+p14 = point(10,3)
+
+p15 = point(11,3)
+p16 = point(12,3)
+p17 = point(12,4)
+p18 = point(12,5)
+p19 = point(12,6)
+p20 = point(12,7)
+p21 = point(12,8)
+
+p22 = point(11,8)
+p23 = point(10,8)
+p24 = point(9,8)
+p25 = point(8,8)
+p26 = point(8,9)
+p27 = point(8,10)
+p28 = point(8,11)
+
+p29 = point(7,11)
+p30 = point(6,11)
+p31 = point(5,11)
+p32 = point(4,11)
+p33 = point(3,11)
+p34 = point(3,10)
+p35 = point(3,9)
+
+p36 = point(3,8)
+p37 = point(3,7)
+p38 = point(3,6)
+p39 = point(3,5)
+p40 = point(3,4)
 
 border_edges_list = [edge(p40,p1) ,edge(p1,p2) ,edge(p2,p3) ,edge(p3,p4) ,edge(p4,p5) ,edge(p5,p6) ,edge(p6,p7) ,edge(p7,p8) ,edge(p8,p9) ,edge(p9,p10) ,edge(p10,p11) ,edge(p11,p12) ,edge(p12,p13) ,edge(p13,p14) ,edge(p14,p15) ,edge(p15,p16) ,edge(p16,p17) ,edge(p17,p18) ,edge(p18,p19) ,edge(p19,p20) ,edge(p20,p21) ,edge(p21,p22) ,edge(p22,p23) ,edge(p23,p24) ,edge(p24,p25) ,edge(p25,p26) ,edge(p26,p27) ,edge(p27,p28) ,edge(p28,p29) ,edge(p29,p30) ,edge(p30,p31) ,edge(p31,p32) ,edge(p32,p33) ,edge(p33,p34) ,edge(p34,p35) ,edge(p35,p36) ,edge(p36,p37) ,edge(p37,p38) ,edge(p38,p39) ,edge(p39,p40)]
 
@@ -582,3 +877,14 @@ border_edges_list = [edge(p40,p1) ,edge(p1,p2) ,edge(p2,p3) ,edge(p3,p4) ,edge(p
 #     print(edg.p1.x/grid_lenght, edg.p1.y/grid_lenght, edg.p2.x/grid_lenght, edg.p2.y/grid_lenght)
     
 find_cycle_borders(all_grids, border_edges_list, m, n)
+rendering(all_grids, m, n)
+
+
+
+
+    
+    
+    
+    
+    
+    
